@@ -1,0 +1,36 @@
+spring.application.name: buildtheguild
+
+logging:
+  file:
+    name: BuildTheGuild-backend.log
+  logback:
+    rollingpolicy:
+      max-history: 5
+      max-file-size: 10MB
+
+server:
+  port: 8104
+  servlet:
+    context-path: /api
+
+spring:
+  boot:
+    admin.client:
+      url: http://localhost:8084
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    url: ${INSPIRANCE_DATASOURCE_URL:jdbc:postgresql://localhost:5432/build_the_guild}
+    username: ${INSPIRANCE_DATASOURCE_USERNAME:USER_BTG}
+    password: ${INSPIRANCE_DATASOURCE_PASSWORD:USER_BTG1}
+    jpa:
+      properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate.ddl-auto: update
+
+management:
+  endpoints:
+    web.exposure:
+      include: "health,logfile,info"
+  endpoint:
+    health.show-details: always
