@@ -8,6 +8,11 @@ logging:
       max-history: 5
       max-file-size: 10MB
 
+buildtheguild:
+  security:
+    jwt-secret: ${BTG_JWT_SECRET:btgJwtSecret}
+    jwt-expiration: 172800000
+
 server:
   port: 8104
   servlet:
@@ -21,12 +26,12 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   datasource:
-    url: ${INSPIRANCE_DATASOURCE_URL:jdbc:postgresql://localhost:5432/build_the_guild}
-    username: ${INSPIRANCE_DATASOURCE_USERNAME:USER_BTG}
-    password: ${INSPIRANCE_DATASOURCE_PASSWORD:USER_BTG1}
-    jpa:
-      properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-      hibernate.ddl-auto: update
+    url: ${BTG_DATASOURCE_URL:jdbc:postgresql://localhost:5432/build_the_guild}
+    username: ${BTG_DATASOURCE_USERNAME:USER_BTG}
+    password: ${BTG_DATASOURCE_PASSWORD:USER_BTG1}
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: create-drop
 
 management:
   endpoints:

@@ -34,5 +34,5 @@ build/
 
 .mvn
 
-BuildTheGuild-backend*.log
+BuildTheGuild-backend*.log*
 /**/application-gorr.yaml
