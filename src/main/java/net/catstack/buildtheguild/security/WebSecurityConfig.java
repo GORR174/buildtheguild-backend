@@ -42,7 +42,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http, final AuthTokenFilter authTokenFilter) throws Exception {
-        http.csrf().disable()
+        http.cors().and().csrf().disable()
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(requestLoggingFilter, AuthTokenFilter.class)
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
