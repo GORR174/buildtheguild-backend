@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http, final AuthTokenFilter authTokenFilter) throws Exception {
-        http.cors().and().csrf().disable()
+        http.csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/auth/**").permitAll()
