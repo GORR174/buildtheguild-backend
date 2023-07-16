@@ -1,6 +1,7 @@
 package net.catstack.buildtheguild.security;
 
 import lombok.RequiredArgsConstructor;
+import net.catstack.buildtheguild.config.RequestLoggingFilter;
 import net.catstack.buildtheguild.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
+    private final RequestLoggingFilter requestLoggingFilter;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter(final JwtUtils jwtUtils, final UserDetailsService userDetailsService, final UserRepository userRepository) {
@@ -41,12 +43,12 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http, final AuthTokenFilter authTokenFilter) throws Exception {
         http.csrf().disable()
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(requestLoggingFilter, AuthTokenFilter.class)
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated();
-
-        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
