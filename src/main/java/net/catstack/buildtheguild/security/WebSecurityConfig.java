@@ -1,6 +1,7 @@
 package net.catstack.buildtheguild.security;
 
 import lombok.RequiredArgsConstructor;
+import net.catstack.buildtheguild.config.CorsFilter;
 import net.catstack.buildtheguild.config.RequestLoggingFilter;
 import net.catstack.buildtheguild.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,6 +31,7 @@ import java.util.Arrays;
 public class WebSecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final RequestLoggingFilter requestLoggingFilter;
+    private final CorsFilter corsFilter;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter(final JwtUtils jwtUtils, final UserDetailsService userDetailsService, final UserRepository userRepository) {
@@ -48,6 +51,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http, final AuthTokenFilter authTokenFilter) throws Exception {
         http.cors().and().csrf().disable()
+                .addFilterBefore(corsFilter, ChannelProcessingFilter.class)
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(requestLoggingFilter, AuthTokenFilter.class)
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
@@ -63,7 +67,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "Authorization", "Content-Type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
